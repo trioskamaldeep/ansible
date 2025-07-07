@@ -1,0 +1,62 @@
+---
+- name: Deploy LAMP stack on Fedora hosts
+  hosts: fedora
+  become: yes
+  become_method: sudo
+ 
+  vars:
+    php_packages:
+      - php
+      - php-mysqlnd
+      - php-cli
+      - php-gd
+      - php-curl
+      - php-mbstring
+      - php-xml
+      - php-pear
+      - php-bcmath
+    mariadb_root_password: 'StrongRootPass123'
+ 
+  tasks:
+    - name: Install Apache
+      dnf:
+        name: httpd
+        state: present
+ 
+    - name: Install PHP and common modules
+      dnf:
+        name: "{{ php_packages }}"
+        state: present
+ 
+    - name: Install MariaDB (MySQL)
+      dnf:
+        name: mariadb-server
+        state: present
+ 
+    - name: Start and enable Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+ 
+    - name: Start and enable MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+ 
+    - name: Set MariaDB root password
+      mysql_user:
+        name: root
+        host_all: yes
+        password: "{{ mariadb_root_password }}"
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      when: ansible_facts['os_family'] == "RedHat"
+ 
+    - name: Create test PHP page
+      copy:
+        dest: /var/www/html/info.php
+        content: "<?php phpinfo(); ?>"
+        owner: apache
+        group: apache
+        mode: '0644'

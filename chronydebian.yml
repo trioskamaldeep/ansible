@@ -1,0 +1,19 @@
+---
+- hosts: ubuntu
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Ensure the chrony NTP deamon is installed
+    apt:
+      name: chrony
+      state: present
+
+  - name: Ensure that the chrony NTP domain is running
+    service:
+      name: chronyd
+      state: started
+      enabled: yes
+
+
+

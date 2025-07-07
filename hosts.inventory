@@ -1,0 +1,6 @@
+[fedora]
+172.27.214.173
+
+[fedora:vars]
+ansible_sudo_pass=Secret555
+
