@@ -1,0 +1,22 @@
+---
+- name: Sample playbook
+  hosts: fedora
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: Copy stuff.txt file on local system to /etc on remote hosts
+    copy:
+      src: ./stuff.txt
+      dest: /etc
+      owner: 'root'
+      group: 'sys'
+      mode: '0644'
+  - name: Add the user 'bob'
+    user:
+      name: bob
+      group: sys
+  - name: Ensure that the cowsay command is installed
+    dnf:
+      update_cache: yes
+      name: 'cowsay'
